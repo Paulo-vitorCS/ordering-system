@@ -4,6 +4,8 @@ import br.com.orderingsystem.assemblers.UserModelAssembler;
 import br.com.orderingsystem.domain.User;
 import br.com.orderingsystem.exceptions.UserNotFoundException;
 import br.com.orderingsystem.repositories.UserRepository;
+import br.com.orderingsystem.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,6 +30,9 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final UserModelAssembler userModelAssembler;
+
+    @Autowired
+    private UserService userService;
 
     public UserController(UserRepository userRepository, UserModelAssembler userModelAssembler) {
         this.userRepository = userRepository;
@@ -50,7 +56,6 @@ public class UserController {
                 .orElseThrow(() -> new UserNotFoundException(id));
 
         return userModelAssembler.toModel(user);
-
     }
 
     @PostMapping("/users")
@@ -58,10 +63,17 @@ public class UserController {
 
         EntityModel<User> entityModel = userModelAssembler.toModel(userRepository.save(newUser));
 
-
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                 .body(entityModel);
+    }
+
+    @PostMapping("/incrementBalance/{id}")
+    ResponseEntity<?> incrementBalance(@PathVariable Long id, @RequestParam Double amount) {
+
+        userService.incrementUserBalance(id, amount);
+
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/users/{id}")
