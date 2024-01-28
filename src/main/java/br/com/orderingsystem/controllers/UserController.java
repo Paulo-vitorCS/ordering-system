@@ -61,11 +61,15 @@ public class UserController {
     @PostMapping("/users")
     ResponseEntity<?> newUser(@RequestBody User newUser) {
 
-        EntityModel<User> entityModel = userModelAssembler.toModel(userRepository.save(newUser));
+        if (newUser.getCpf().length() == 11) {
+            EntityModel<User> entityModel = userModelAssembler.toModel(userRepository.save(newUser));
 
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel);
+            return ResponseEntity
+                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                    .body(entityModel);
+        } else {
+            return ResponseEntity.badRequest().body("The CPF number is invalid. Check the number of characters");
+        }
     }
 
     @PostMapping("/incrementBalance/{id}")
