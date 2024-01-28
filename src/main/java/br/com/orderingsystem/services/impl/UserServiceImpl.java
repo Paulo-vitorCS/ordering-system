@@ -15,6 +15,16 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
+    public Optional<User> findUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Override
+    public Optional<User> findUserByCpf(String cpf) {
+        return userRepository.findByCpf(cpf);
+    }
+
+    @Override
     public void incrementUserBalance(Long userId, Double amount) {
         Optional<User> optionalUser = userRepository.findById(userId);
         optionalUser.ifPresent(user -> {

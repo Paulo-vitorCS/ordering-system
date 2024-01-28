@@ -1,5 +1,6 @@
 package br.com.orderingsystem.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,9 +22,15 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
+    @Column(unique = true)
     private String cpf;
+
+    @Column(unique = true)
     private String email;
+
     private Double balance;
 
     @ManyToMany
@@ -79,6 +86,14 @@ public class User implements Serializable {
 
     public void setBalance(Double balance) {
         this.balance = balance;
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
     }
 
     @Override
